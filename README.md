@@ -40,21 +40,34 @@ Enunciado de cada entrega em [`entregas/`](entregas/).
 
 ---
 
-## As cinco entregas
+## E1 — Plano de endereçamento
 
-| # | Semana | Tema | Vale |
-|---|---|---|---|
-| [E1](entregas/E1.md) | 6 | Dois segmentos e um serviço | 0,8 |
-| [E2](entregas/E2.md) | 9 | O roteador e o encapsulamento | 1,4 |
-| [E3](entregas/E3.md) | 11 | O serviço não pode cair | 1,2 |
-| [E4](entregas/E4.md) | 12 | A rota se refaz sozinha | 1,2 |
-| — | 14 | Apresentação | 1,4 |
-| [E5](entregas/E5.md) | 13 | O pacote entrega o segredo · **Cartilha** | **2,0 (Extensão)** |
+A primeira entrega utiliza dois segmentos IPv4 independentes, cada um com uma rede `/24`.
 
-E1–E4 e a apresentação compõem os 6,0 de avaliação prática. E5 é a atividade
-de extensão, com nota escalonada em 1,2 / 1,7 / 2,0.
+| Segmento | Rede | Capacidade | Máquinas |
+|---|---|---:|---|
+| A | `10.0.10.0/24` | 254 hosts | `host-a1`, `host-a2`, `srv-a` |
+| B | `10.0.20.0/24` | 254 hosts | `host-b1`, `host-b2` |
+
+### Endereços atribuídos
+
+| Máquina | Segmento | Endereço IPv4 |
+|---|---|---|
+| `e1-host-a1` | A | `10.0.10.10/24` |
+| `e1-host-a2` | A | `10.0.10.11/24` |
+| `e1-srv-a` | A | `10.0.10.20/24` |
+| `e1-host-b1` | B | `10.0.20.10/24` |
+| `e1-host-b2` | B | `10.0.20.11/24` |
+
+Em uma rede `/24`, existem 256 endereços no total. O primeiro endereço, como `10.0.10.0`, é o endereço da rede e não pode ser atribuído a um host. O último, `10.0.10.255`, é o endereço de broadcast e também não pode ser atribuído a um host. Portanto, ficam 254 endereços utilizáveis para máquinas, de `10.0.10.1` a `10.0.10.254`. O mesmo raciocínio vale para o segmento B.
+
+Os segmentos A e B são redes distintas: `10.0.10.0/24` e `10.0.20.0/24`. Nesta etapa não existe roteador entre elas e os hosts estão sem rota padrão. Por isso, um host do segmento A não possui uma rota de camada 3 para a rede B, resultando em `Network is unreachable`. Da mesma forma, o segmento B não consegue alcançar o servidor HTTP localizado no segmento A.
+
+A comunicação dentro de cada segmento funciona normalmente, enquanto a comunicação entre os segmentos permanece isolada, conforme exigido pela E1.
 
 ---
+
+## As cinco entregas
 
 ## Regras do jogo
 
