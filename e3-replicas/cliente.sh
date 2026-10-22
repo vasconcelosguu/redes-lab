@@ -4,11 +4,17 @@
 # Nunca demore mais que 5 segundos, mesmo com tudo fora do ar.
 #
 # ---- versão ingênua: uma réplica só. Seu trabalho é substituir isto. ----
-REPLICAS="10.0.20.21"
+REPLICAS="10.0.20.21 10.0.20.22 10.0.20.23"
 
 for ip in $REPLICAS; do
   r=$(curl -s -m 1 "http://$ip:8080/" 2>/dev/null)
-  if [ -n "$r" ]; then echo "$r"; exit 0; fi
+
+  case "$r" in
+    replica1|replica2|replica3)
+      echo "$r"
+      exit 0
+      ;;
+  esac
 done
 echo INDISPONIVEL
 exit 1
