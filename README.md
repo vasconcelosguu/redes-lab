@@ -126,3 +126,46 @@ git clone <repo-do-grupo> && cd <repo> && make up E=2 && make verificar E=2
 
 Os roteiros imprimem o valor observado em cada ponto, não só passou/falhou —
 dá para corrigir lendo a saída.
+
+---
+
+## E4 — Roteamento dinâmico com RIP
+
+Na quarta entrega, foi implementado roteamento dinâmico utilizando o protocolo RIP, por meio do BIRD. O objetivo é permitir que a rede encontre um caminho alternativo automaticamente quando um dos enlaces fica indisponível.
+
+### Funcionamento
+
+A topologia utiliza três roteadores:
+
+- **r1:** conecta o segmento A aos demais roteadores.
+- **r2:** conecta o segmento B e utiliza o trânsito 1 como caminho principal.
+- **r3:** fornece o caminho alternativo entre os segmentos.
+
+O BIRD utiliza os seguintes protocolos:
+
+- `device`: acompanha as interfaces de rede.
+- `direct`: anuncia as redes diretamente conectadas.
+- `rip`: troca informações de roteamento com os roteadores vizinhos.
+- `kernel`: instala as rotas aprendidas na tabela de roteamento do sistema.
+
+### Teste de recuperação
+
+No estado normal, o tráfego para o segmento B utiliza o caminho direto por r2, com próximo salto `10.0.30.12`.
+
+Quando o trânsito 1 é derrubado, o RIP detecta a indisponibilidade e permite que r1 utilize o caminho alternativo por r3, com próximo salto `10.0.40.13`.
+
+Na execução registrada em `e4-roteamento/evidencias/verificacao.txt`, a recuperação ocorreu em **25 segundos**. Em uma verificação anterior, o tempo observado foi de 23 segundos.
+
+Após religar o trânsito 1, a rede continuou funcionando. Na execução registrada, a rota observada permaneceu pelo caminho alternativo via r3.
+
+### Vetor de distância em uma rede com 50 roteadores
+
+Em uma rede maior, com 50 roteadores, a convergência pode levar mais tempo, pois as informações sobre mudanças nas rotas precisam ser propagadas entre os vizinhos. Quanto maior e mais complexa a topologia, maior pode ser o tráfego de atualizações e o tempo necessário para que todos os roteadores atualizem suas tabelas.
+
+O RIP também possui uma limitação de métrica: considera 15 saltos como a maior distância válida e 16 como infinito, ou seja, destino inalcançável. Portanto, uma rota que ultrapasse 15 saltos não pode ser utilizada pelo protocolo. Isso limita sua aplicação em redes grandes, especialmente quando há caminhos com muitos roteadores intermediários.
+
+### Evidências
+
+Os resultados da verificação estão registrados em:
+
+`e4-roteamento/evidencias/verificacao.txt`
